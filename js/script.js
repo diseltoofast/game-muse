@@ -135,6 +135,7 @@ function playNextTrack() {
 function playTrack() {
   bgMusic.src = playlist[currentTrack];
   if (isPlaying) {
+    bgMusic.load();
     bgMusic
       .play()
       .catch((err) => console.error("Не удалось воспроизвести музыку:", err));
@@ -147,6 +148,7 @@ function playTrack() {
 function toggleMusic() {
   if (!isPlaying) {
     // Пытаемся запустить музыку
+    bgMusic.load();
     bgMusic
       .play()
       .catch((err) => console.error("Ошибка воспроизведения:", err));
@@ -547,8 +549,8 @@ function resizeCanvas() {
 }
 
 // Ждём первого клика/касания
-document.addEventListener("click", startGame);
-document.addEventListener("touchstart", startGame);
+document.addEventListener("click", startGame, { once: true });
+document.addEventListener("touchstart", startGame, { once: true });
 toggleBtn.addEventListener("click", toggleMusic);
 nextBtn.addEventListener("click", playNextTrack);
 volumeSlider.addEventListener("input", function () {
