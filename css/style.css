@@ -1,21 +1,25 @@
 :root {
   --bg-color: #000;
 }
+
 *,
 ::after,
 ::before {
   box-sizing: border-box;
 }
+
 * {
   margin: 0;
   padding: 0;
 }
+
 body {
   background: var(--bg-color);
   overflow: hidden;
   font-size: 16px;
   font-family: consolas, sans-serif;
 }
+
 .results {
   position: absolute;
   top: 10px;
@@ -27,6 +31,7 @@ body {
   flex-direction: column;
   gap: 5px;
 }
+
 .controls {
   position: absolute;
   top: 10px;
@@ -36,6 +41,7 @@ body {
   align-items: center;
   gap: 10px;
 }
+
 .controls button {
   background: none;
   color: white;
@@ -43,12 +49,15 @@ body {
   font-size: 16px;
   cursor: pointer;
 }
+
 #currentTrack {
   color: white;
 }
+
 #volumeControl {
   width: 100px;
 }
+
 #startScreen {
   position: absolute;
   top: 0;
@@ -63,14 +72,30 @@ body {
   flex-direction: column;
   z-index: 10;
 }
+
 #highscore {
   color: #ffbf29;
 }
+
 #fps {
   color: #0f0;
 }
+
 canvas {
   display: block;
   will-change: transform;
   image-rendering: pixelated;
+}
+
+@media (max-width: 575.98px) {
+  .results {
+    font-size: 12px;
+    gap: 2px;
+  }
+  .controls {
+    font-size: 12px;
+    max-width: 200px;
+    flex-wrap: wrap;
+    justify-content: end;
+  }
 }
