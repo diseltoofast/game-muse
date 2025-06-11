@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Shape Shooter</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <div id="startScreen">
+    <h1>Shape Shooter</h1>
+    <p>Click to start</p>
+  </div>
+
+  <div class="results">
+    <div id="score">Score: 0</div>
+    <div id="miss">Miss: 0</div>
+    <div id="highscore">Highscore: 0</div>
+    <div id="fps">FPS: 0</div>
+  </div>
+
+  <div class="controls">
+    <div id="currentTrack">Track: 1</div>
+    <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="0.5">
+    <button id="nextBtn">
+      <svg width="40" height="40">
+        <use href="#icon-next" xlink:href="#icon-next"></use>
+      </svg>
+    </button>
+    <button id="toggleBtn">
+      <svg width="40" height="40">
+        <use href="#icon-pause" xlink:href="#icon-pause"></use>
+      </svg>
+    </button>
+  </div>
+
+  <canvas id="gameCanvas"></canvas>
+
+  <audio id="bgMusic"></audio>
+  <audio id="shootSound">
+    <source src="assets/shoot.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="explosionSound">
+    <source src="assets/explosion.mp3" type="audio/mpeg">
+  </audio>
+
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
+    <symbol id="icon-next">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 0C8.95493 0 0 8.95453 0 20C0 31.0455 8.95493 40 20 40C31.0457 40 40 31.0451 40 20C40 8.95427 31.0457 0 20 0ZM28.8416 26.63H28.8412C28.8412 27.8964 27.8145 28.9231 26.5481 28.9231C25.2817 28.9231 24.2551 27.8964 24.2551 26.63V21.836C24.1565 21.948 24.0417 22.0467 23.9092 22.1231L13.0961 28.3657C12.8821 28.4892 12.6435 28.5515 12.4045 28.5515C12.1663 28.5515 11.9269 28.4892 11.7129 28.3657C11.2852 28.1192 11.0213 27.662 11.0213 27.1681V14.6824C11.0213 14.1883 11.2852 13.7315 11.7129 13.4845C12.1411 13.2373 12.6681 13.2373 13.0963 13.4845L23.9096 19.7276C24.042 19.8044 24.1568 19.9029 24.2555 20.0149V14.7529C24.2555 13.4865 25.2821 12.4599 26.5485 12.4599C27.8149 12.4599 28.8416 13.4865 28.8416 14.7529V26.63Z" fill="white" />
+      </svg>
+    </symbol>
+    <symbol id="icon-pause">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20.0027 0C8.95759 0 0.00265503 8.95444 0.00265503 19.9998C0.00265503 31.0448 8.95759 40 20.0027 40C31.0484 40 40.0027 31.0448 40.0027 19.9998C40.0027 8.95444 31.0487 0 20.0027 0ZM17.9239 25.9381C17.9239 27.2045 16.8972 28.2312 15.6308 28.2312C14.3644 28.2312 13.3377 27.2045 13.3377 25.9381V14.0612C13.3377 12.7948 14.3644 11.7681 15.6308 11.7681C16.8972 11.7681 17.9239 12.7948 17.9239 14.0612V25.9381ZM26.5299 25.9381C26.5299 27.2045 25.5031 28.2312 24.2368 28.2312C22.9704 28.2312 21.9437 27.2045 21.9437 25.9381V14.0612C21.9437 12.7948 22.9704 11.7681 24.2368 11.7681C25.5032 11.7681 26.5299 12.7948 26.5299 14.0612V25.9381Z" fill="white" />
+      </svg>
+    </symbol>
+    <symbol id="icon-play">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 0C8.95427 0 0 8.95493 0 20C0 31.0455 8.95427 40 20 40C31.0457 40 40 31.0455 40 20C40 8.95493 31.0457 0 20 0ZM27.4461 21.1021L15.9052 27.7649C15.7292 27.8669 15.532 27.9175 15.3356 27.9175C15.1392 27.9175 14.9424 27.8669 14.7657 27.7649C14.4137 27.5616 14.1965 27.1853 14.1965 26.778V13.452C14.1965 13.0449 14.414 12.668 14.7657 12.4651C15.1188 12.2613 15.5532 12.2613 15.9059 12.4651L27.4468 19.1283C27.7995 19.3323 28.0167 19.7085 28.016 20.1152C28.016 20.5221 27.7992 20.8988 27.4461 21.1021Z" fill="white" />
+      </svg>
+    </symbol>
+  </svg>
+
+  <script src="js/script.js"></script>
+</body>
+
+</html>
