@@ -191,7 +191,8 @@ async function startGame() {
   // Запуск игры
   animateEq(); // запуск анимации эквалайзера
   animate(); // функция анимации
-  setInterval(spawnShape, 500); // генерация фигур
+  spawnShape();
+  setInterval(spawnShape, 1000); // генерация фигур
 }
 
 function getRandomType() {
