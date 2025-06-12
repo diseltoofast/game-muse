@@ -72,57 +72,6 @@ let frameCount = 0;
 let fps = 0;
 let lastTime = performance.now();
 
-function animateEq() {
-  analyser.getByteFrequencyData(dataArray);
-
-  // ctx.save();
-
-  // Полупрозрачный фон для эффекта затухания
-  ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Прозрачность
-  ctx.globalAlpha = 0.7;
-
-  const barCount = bufferLength; // количество полосок
-  const slice = (Math.PI * 2) / barCount;
-
-  for (let i = 0; i < barCount; i++) {
-    const value = dataArray[i];
-    const amplitude = value; // Высота столбика
-    const height = (amplitude / 255) * maxBarHeight();
-
-    const angle = i * slice - Math.PI / 2; // начинать сверху
-
-    const x1 = centerX() + Math.cos(angle) * radius();
-    const y1 = centerY() + Math.sin(angle) * radius();
-    const x2 = centerX() + Math.cos(angle) * (radius() + height);
-    const y2 = centerY() + Math.sin(angle) * (radius() + height);
-
-    // Цвет в зависимости от амплитуды
-    const hue = ((i * 360) / barCount + Date.now() / 30) % 360;
-
-    // Создаем градиент от темного к светлому
-    const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
-    gradient.addColorStop(0, `hsla(${hue}, 100%, 30%, 0.8)`);
-    gradient.addColorStop(1, `hsla(${hue}, 100%, 70%, 1)`);
-
-    ctx.strokeStyle = gradient;
-    ctx.lineWidth = 3;
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = `hsl(${hue}, 100%, 50%)`;
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-    ctx.shadowBlur = 0; // сброс тени после применения
-  }
-
-  // ctx.restore();
-
-  requestAnimationFrame(animateEq);
-}
-
 function playNextTrack() {
   currentTrack = (currentTrack + 1) % playlist.length;
   playTrack();
@@ -191,6 +140,7 @@ async function startGame() {
   // Запуск игры
   animateEq(); // запуск анимации эквалайзера
   animate(); // функция анимации
+  requestAnimationFrame(animate);
   spawnShape();
   setInterval(spawnShape, 1000); // генерация фигур
 }
@@ -259,13 +209,13 @@ class Shape {
     this.y = Math.random() * canvas.height;
     this.size = Math.random() * 50 + 20;
 
-    this.speedX = (Math.random() - 0.5) * 2;
-    this.speedY = (Math.random() - 0.5) * 2;
+    this.speedX = (Math.random() - 1) * 0.8;
+    this.speedY = (Math.random() - 1) * 0.8;
     this.type = getRandomType();
 
     // Вращение
     this.rotation = 0; // текущий угол поворота
-    this.rotationSpeed = (Math.random() - 0.5) * 0.05; // скорость вращения
+    this.rotationSpeed = (Math.random() - 1) * 0.02; // скорость вращения
 
     // Пульсация
     this.pulse = 0;
@@ -282,7 +232,7 @@ class Shape {
   update() {
     // Плавное появление
     if (this.alpha < 1 && !this.spawned) {
-      this.alpha += 0.02;
+      this.alpha += 0.002;
     } else {
       this.spawned = true;
     }
@@ -290,7 +240,7 @@ class Shape {
     if (!this.exploded) {
       this.x += this.speedX;
       this.y += this.speedY;
-      this.pulse += this.pulseDir * 0.05;
+      this.pulse += this.pulseDir * 0.01;
       if (this.pulse > 0.5 || this.pulse < -0.5) this.pulseDir *= -1;
 
       // Вращение
@@ -491,6 +441,55 @@ function animate() {
 
   updateFPS(); // обновляем FPS
   requestAnimationFrame(animate);
+}
+
+function animateEq() {
+  analyser.getByteFrequencyData(dataArray);
+
+  // ctx.save();
+
+  // Полупрозрачный фон для эффекта затухания
+  ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Прозрачность
+  ctx.globalAlpha = 0.7;
+
+  const barCount = bufferLength; // количество полосок
+  const slice = (Math.PI * 2) / barCount;
+
+  for (let i = 0; i < barCount; i++) {
+    const value = dataArray[i];
+    const amplitude = value; // Высота столбика
+    const height = (amplitude / 255) * maxBarHeight();
+
+    const angle = i * slice - Math.PI / 2; // начинать сверху
+
+    const x1 = centerX() + Math.cos(angle) * radius();
+    const y1 = centerY() + Math.sin(angle) * radius();
+    const x2 = centerX() + Math.cos(angle) * (radius() + height);
+    const y2 = centerY() + Math.sin(angle) * (radius() + height);
+
+    // Цвет в зависимости от амплитуды
+    const hue = ((i * 360) / barCount + Date.now() / 30) % 360;
+
+    // Создаем градиент от темного к светлому
+    const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
+    gradient.addColorStop(0, `hsla(${hue}, 100%, 25%, 0.7)`);
+    gradient.addColorStop(1, `hsla(${hue}, 100%, 70%, 1)`);
+
+    ctx.strokeStyle = gradient;
+    ctx.lineWidth = 3;
+
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+
+  // ctx.restore();
+
+  requestAnimationFrame(animateEq);
 }
 
 function spawnShape() {
