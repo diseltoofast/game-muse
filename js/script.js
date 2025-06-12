@@ -75,7 +75,7 @@ let lastTime = performance.now();
 function animateEq() {
   analyser.getByteFrequencyData(dataArray);
 
-  ctx.save();
+  // ctx.save();
 
   // Полупрозрачный фон для эффекта затухания
   ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
@@ -118,7 +118,7 @@ function animateEq() {
     ctx.shadowBlur = 0; // сброс тени после применения
   }
 
-  ctx.restore();
+  // ctx.restore();
 
   requestAnimationFrame(animateEq);
 }
@@ -510,12 +510,9 @@ canvas.addEventListener("click", (e) => {
 
 function shoot(x, y) {
   let isHit = false;
-  shootSound.currentTime = 0;
-  shootSound.volume = 0.2;
-  shootSound.play();
 
   for (const shape of shapes) {
-    if (!shape.exploded && shape.isHit(x, y)) {
+    if (shape.isHit(x, y)) {
       shape.exploded = true;
       isHit = true;
       score++;
@@ -526,6 +523,10 @@ function shoot(x, y) {
         document.getElementById("highscore").textContent =
           "Highscore: " + highscore;
       }
+    } else {
+      shootSound.currentTime = 0;
+      shootSound.volume = 0.2;
+      shootSound.play();
     }
   }
 
