@@ -44,13 +44,6 @@ const playlist = [
   "assets/music6.mp3",
   "assets/music7.mp3",
 ];
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-const analyser = audioCtx.createAnalyser();
-const audioCtxSource = audioCtx.createMediaElementSource(bgMusic);
-analyser.fftSize = 512;
-analyser.connect(audioCtx.destination);
-audioCtxSource.connect(analyser);
-
 // Параметры кругового эквалайзера
 const centerX = () => canvas.width / 2;
 const centerY = () => canvas.height / 2;
@@ -69,8 +62,11 @@ volumeSlider.value = savedVolume;
 let currentTrack = 0;
 let isPlaying = false;
 
-let bufferLength = analyser.frequencyBinCount;
-let dataArray = new Uint8Array(bufferLength);
+let audioCtx;
+let audioCtxSource;
+let analyser;
+let bufferLength = 0;
+let dataArray = [];
 
 let frameCount = 0;
 let fps = 0;
@@ -134,8 +130,8 @@ function playNextTrack() {
 
 function playTrack() {
   bgMusic.src = playlist[currentTrack];
+  bgMusic.muted = false;
   if (isPlaying) {
-    bgMusic.load();
     bgMusic
       .play()
       .catch((err) => console.error("Не удалось воспроизвести музыку:", err));
@@ -148,7 +144,6 @@ function playTrack() {
 function toggleMusic() {
   if (!isPlaying) {
     // Пытаемся запустить музыку
-    bgMusic.load();
     bgMusic
       .play()
       .catch((err) => console.error("Ошибка воспроизведения:", err));
@@ -168,7 +163,7 @@ function updateTrackInfo() {
   currentTrackLabel.textContent = `Track: ${currentTrack + 1}`;
 }
 
-function startGame() {
+async function startGame() {
   startScreen.style.display = "none";
   document.removeEventListener("click", startGame);
   document.removeEventListener("touchstart", startGame);
@@ -178,9 +173,20 @@ function startGame() {
   isPlaying = true;
   playTrack();
 
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  audioCtxSource = audioCtx.createMediaElementSource(bgMusic);
+
   if (audioCtx.state === "suspended") {
-    audioCtx.resume();
+    await audioCtx.resume();
   }
+
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 512;
+  analyser.connect(audioCtx.destination);
+  audioCtxSource.connect(analyser);
+
+  bufferLength = analyser.frequencyBinCount;
+  dataArray = new Uint8Array(bufferLength);
 
   // Запуск игры
   animateEq(); // запуск анимации эквалайзера
@@ -496,10 +502,10 @@ canvas.addEventListener("click", (e) => {
   shoot(e.clientX, e.clientY);
 });
 
-canvas.addEventListener("touchstart", (e) => {
-  const touch = e.touches[0];
-  shoot(touch.clientX, touch.clientY);
-});
+// canvas.addEventListener("touchstart", (e) => {
+//   const touch = e.touches[0];
+//   shoot(touch.clientX, touch.clientY);
+// });
 
 function shoot(x, y) {
   let isHit = false;
@@ -550,7 +556,7 @@ function resizeCanvas() {
 
 // Ждём первого клика/касания
 document.addEventListener("click", startGame, { once: true });
-document.addEventListener("touchstart", startGame, { once: true });
+// document.addEventListener("touchstart", startGame, { once: true });
 toggleBtn.addEventListener("click", toggleMusic);
 nextBtn.addEventListener("click", playNextTrack);
 volumeSlider.addEventListener("input", function () {
