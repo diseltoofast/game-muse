@@ -506,14 +506,14 @@ function animateEq() {
 }
 
 function spawnShape() {
+  // Случайная задержка от 500 до 2000 мс
+  const delay = Math.random() * 2000 + 500;
+
   if (shapes.length < shapesLimit) {
-    // Случайная задержка от 500 до 2000 мс
-    const delay = Math.random() * 2000 + 500;
-
     shapes.push(new Shape());
-
-    setTimeout(spawnShape, delay);
   }
+
+  setTimeout(spawnShape, delay);
 }
 
 canvas.addEventListener("click", (e) => {
