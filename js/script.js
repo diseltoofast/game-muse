@@ -49,9 +49,9 @@ const centerX = () => canvas.width / 2;
 const centerY = () => canvas.height / 2;
 const radius = () => Math.min(canvas.width, canvas.height) / 3.5;
 const maxBarHeight = () => radius() * 0.7;
-
 const fpsDisplay = document.getElementById("fps");
-const shapesLimit = 100; // лимит фигур
+const shapesLimit = 30; // лимит фигур
+const shapesSpecialLimit = 5; // лимит спец-фигур
 
 // Загружаем сохранённый уровень громкости или устанавливаем по умолчанию
 let savedVolume = parseFloat(localStorage.getItem("bgMusicVolume"));
@@ -72,6 +72,8 @@ let frameCount = 0;
 let fps = 0;
 let lastTime = performance.now();
 
+let shapesSpecial = 0;
+
 function playNextTrack() {
   currentTrack = (currentTrack + 1) % playlist.length;
   playTrack();
@@ -79,7 +81,6 @@ function playNextTrack() {
 
 function playTrack() {
   bgMusic.src = playlist[currentTrack];
-  bgMusic.muted = false;
   if (isPlaying) {
     bgMusic
       .play()
@@ -142,7 +143,6 @@ async function startGame() {
   animate(); // функция анимации
   requestAnimationFrame(animate);
   spawnShape();
-  setInterval(spawnShape, 1000); // генерация фигур
 }
 
 function getRandomType() {
@@ -227,6 +227,16 @@ class Shape {
 
     this.spawned = false;
     this.exploded = false;
+    this.special = false;
+
+    // спец-фигура
+    if (
+      Math.floor(Math.random() * 6) === 1 &&
+      shapesSpecial < shapesSpecialLimit
+    ) {
+      this.special = true;
+      shapesSpecial++;
+    }
   }
 
   update() {
@@ -392,6 +402,9 @@ class Shape {
     explosionSound.volume = 0.2;
     explosionSound.play();
     this.exploded = true;
+    if (this.special) {
+      shapesSpecial--;
+    }
   }
 }
 
@@ -494,7 +507,12 @@ function animateEq() {
 
 function spawnShape() {
   if (shapes.length < shapesLimit) {
+    // Случайная задержка от 500 до 2000 мс
+    const delay = Math.random() * 2000 + 500;
+
     shapes.push(new Shape());
+
+    setTimeout(spawnShape, delay);
   }
 }
 
