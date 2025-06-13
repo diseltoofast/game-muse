@@ -52,6 +52,12 @@ const maxBarHeight = () => radius() * 0.7;
 const fpsDisplay = document.getElementById("fps");
 const shapesLimit = 30; // лимит фигур
 const shapesSpecialLimit = 5; // лимит спец-фигур
+const comboText = {
+  text: "",
+  scale: 0.5,
+  alpha: 0,
+  show: false,
+};
 
 // Загружаем сохранённый уровень громкости или устанавливаем по умолчанию
 let savedVolume = parseFloat(localStorage.getItem("bgMusicVolume"));
@@ -452,6 +458,47 @@ function animate() {
     }
   }
 
+  // Анимация текста
+  if (comboText.show) {
+    // Максимальный масштаб относительно ширины/высоты экрана
+    const maxFontSize = Math.min(canvas.width, canvas.height) * 0.4;
+
+    ctx.save();
+    ctx.globalAlpha = comboText.alpha;
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+
+    // Ограничиваем масштаб
+    if (comboText.scale * 20 < maxFontSize) {
+      comboText.scale += 0.05; // продолжаем увеличивать
+    }
+
+    const currentFontSize = comboText.scale * 20;
+
+    ctx.font = `bold ${currentFontSize}px sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    // Градиент или просто цвет
+    const gradient = ctx.createLinearGradient(
+      -currentFontSize,
+      -currentFontSize,
+      currentFontSize,
+      currentFontSize
+    );
+    gradient.addColorStop(0, "#FFD700");
+    gradient.addColorStop(1, "#FF4500");
+    ctx.fillStyle = gradient;
+
+    ctx.fillText(comboText.text, 0, 0);
+    ctx.restore();
+
+    // Постепенное исчезновение
+    comboText.alpha -= 0.005;
+    if (comboText.alpha <= 0) {
+      comboText.show = false;
+    }
+  }
+
   updateFPS(); // обновляем FPS
   requestAnimationFrame(animate);
 }
@@ -526,31 +573,42 @@ canvas.addEventListener("click", (e) => {
 // });
 
 function shoot(x, y) {
-  let isHit = false;
+  let explodedCount = 0;
 
   for (const shape of shapes) {
     if (shape.isHit(x, y)) {
       shape.exploded = true;
-      isHit = true;
-      score++;
-      document.getElementById("score").textContent = "Score: " + score;
-      if (score > highscore) {
-        highscore = score;
-        localStorage.setItem("highscore", highscore);
-        document.getElementById("highscore").textContent =
-          "Highscore: " + highscore;
-      }
-    } else {
-      shootSound.currentTime = 0;
-      shootSound.volume = 0.2;
-      shootSound.play();
+      explodedCount++;
     }
   }
 
-  if (!isHit) {
+  if (explodedCount) {
+    shootSound.currentTime = 0;
+    shootSound.volume = 0.2;
+    shootSound.play();
+
+    score += explodedCount;
+    document.getElementById("score").textContent = "Score: " + score;
+    if (score > highscore) {
+      highscore = score;
+      localStorage.setItem("highscore", highscore);
+      document.getElementById("highscore").textContent =
+        "Highscore: " + highscore;
+    }
+    if (explodedCount >= 2) {
+      showComboText(`Combo x${explodedCount}!`);
+    }
+  } else {
     miss++;
     document.getElementById("miss").textContent = "Miss: " + miss;
   }
+}
+
+function showComboText(text) {
+  comboText.text = text;
+  comboText.scale = 0.4;
+  comboText.alpha = 1;
+  comboText.show = true;
 }
 
 function updateFPS() {
